@@ -1,0 +1,230 @@
+
+@font-face {
+    font-family: Mont;
+    src: url('../../assets/fonts/Mont-SemiBold.ttf');
+}
+.charge{
+    position: fixed;
+    /* left: 0; */
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10000;
+    background-color: #BBCDE5;
+    display: flex;
+    padding: 20vw;
+    transition: 0.5s;
+}
+.charge img{
+    margin: auto;
+    animation-name: ImgWait;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    opacity: 20%;
+}
+@keyframes ImgWait {
+    0%{
+        opacity: 20%;
+    }
+    50%{
+        opacity: 100%;
+    }
+    100%{
+        opacity: 20%;
+    }
+    
+}
+
+
+
+.nav{
+    padding: 3vw;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    right: 0;
+}
+.nav ul{
+    display: flex;
+    justify-content: space-between;
+}
+
+.MenuHamburger{
+    position: absolute;
+    left: 2vw;
+    z-index: 100;
+}
+footer{
+    background-color: rgb(255, 255, 255);
+    text-align: center;
+    color: black;
+    padding-top: 10vh;
+    padding-bottom: 100px;
+    padding: 10vw;
+    font-family: Mont;
+}
+footer img{
+    width: 700px;
+    margin: auto;
+}
+footer h3 {
+    margin-top: 10vh;
+    font-size: 50px;
+    font-weight: bold;
+}
+footer h3 span{
+    font-weight: lighter;
+}
+footer .msg {
+    font-weight: bold;
+}
+.cursor{
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(255, 255, 255);
+    z-index: 1000;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+    display: none;
+    opacity: 50%;
+}
+a{
+    cursor: pointer;
+}
+.menContainer{
+    position: fixed;
+    right: 0;
+    top: 0;
+    left: 91vw;
+    bottom: 0;
+    color: white;
+    padding: 10px;
+    transition: 0.5s;
+    font-weight: bold;
+}
+.menContainer ul li a {
+    transition: 0.2s;
+}
+.menContainer ul li a:hover{
+    color: #6F6F6F;
+}
+.menContainer ul{
+    display: flex;
+    flex-direction: column;
+    margin-left: 12vw;
+    margin-top: 10vh;
+}
+.menContainer ul li{
+    display: flex;
+    font-size: 10vw;
+}
+/* .menContainer ul li .arrow{
+    position: absolute;
+    left: 1vw;
+    display: none;
+} */
+.social{
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: white;
+    padding: 2vw;
+    transition: 0.5s;
+    
+}
+.social:hover{
+    background-color: #BBCDE5;
+}
+.social ul{
+    /* background-color: rgb(0, 0, 0); */
+    margin-top: 30vh;
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+}
+.social ul li{
+    margin: auto;
+    /* background-color: white;
+    border-radius: 50%;
+    color: grey;
+    padding: 5px; */
+}
+.UpBtn{
+    background-color: rgb(190, 190, 190);
+    position: absolute;
+    left: 1vw;
+    /* bottom: 1vh; */
+    padding: 1vw;
+    border-radius: 50%;
+    color: black;
+    /* bottom: 5vh; */
+}
+.mapSec{
+    background-color: #2985DA;
+    padding: 10vw;
+}
+.dir{
+    text-align: left;
+}
+.dir a{
+    background-color: white;
+    padding: 2vw;
+    padding-top: 0.5vw;
+    padding-bottom: 0.5vw;
+    font-weight: bold;
+    font-size: 30px;
+    color: #444646;
+    border-radius: 0.5rem;
+}
+.dir h2{
+    font-size: 80px;
+    font-weight: bold;
+}
+.dir h2 span{
+    font-size: 30px;
+    font-weight: normal;
+}
+
+@media (max-width:800px) {
+    .MenuHamburger{
+        left: 5vw;
+    }
+    .nav img{
+        width: 30vw !important;
+    }
+    .social ul{
+        /* display: none; */
+    }
+    #intro div{
+        margin-top: 10vh !important;
+    }
+    /* #intro div h1{
+        font-size: 10vw !important;
+        text-align: center !important;
+        margin-left: 0 !important;
+    } */
+    .downSvg{
+        /* margin: auto !important;
+        position: relative !important;
+        left: 0 !important; */
+        position: absolute;
+        bottom: 50px;
+    }
+    .social:hover{
+        background:transparent !important;
+    }
+    .cursor{
+        display: none !important;
+    }
+    .dir h2 {
+            font-size: 70px;
+            font-weight: bold;
+    }
+    .compassImg{
+        display: none;
+    }
+}

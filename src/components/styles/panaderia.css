@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+.gridContainer{
+    /* display: grid;
+    grid-template-columns: repeat(auto-fill,230px);
+    gap: 20px;
+    justify-content: center;
+    grid-template-rows: mansory; */
+    /* width: 80vw;
+    margin: 0px auto;
+    columns: 4;
+    column-gap: 10px; */
+    padding: 10vw;
+    padding-top: 0;
+}
+.my-masonry-grid {
+    display: -webkit-box;
+    /* Not needed if autoprefixing */
+    display: -ms-flexbox;
+    /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: -30px;
+    /* gutter size offset */
+    width: auto;
+}
+
+.my-masonry-grid_column {
+    padding-left: 30px;
+    /* gutter size */
+    background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column>div {
+    /* change div to reference your elements you put in <Masonry> */
+    background: rgb(170, 255, 201);
+    margin-bottom: 30px;
+    text-align: center;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 2vh;
+}
+.my-masonry-grid_column>div:hover {
+    /* change div to reference your elements you put in <Masonry> */
+    background: rgb(171, 171, 255) !important;
+}
+.my-masonry-grid_column>div>p {
+    transition: 0.2s;
+    font-family: 'Satisfy', cursive;
+    letter-spacing: 2px;
+    font-size: 30px;
+}
+.my-masonry-grid_column>div:hover>p {
+    /* change div to reference your elements you put in <Masonry> */
+    font-size: 25px;
+    
+}
+.my-masonry-grid_column>div img {
+    border-radius: 2rem;
+}
+
+
+
+@media (max-width:800px) {
+    .my-masonry-grid_column>div {
+            /* change div to reference your elements you put in <Masonry> */
+            background: rgb(171, 171, 255);
+    }
+    
+}

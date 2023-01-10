@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Forum&display=swap');
+body {
+  margin: 0;
+  font-family: 'Forum', cursive;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* background-color: rgb(0, 32, 59); */
+  background-color: white;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+body::-webkit-scrollbar {
+  width: 10px;            /* width of the entire scrollbar */
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.797);    
+  border-radius: 20px;
+}
+
+/* body::-webkit-scrollbar { */
+  /* display: none; */
+  /* Safari and Chrome */
+/* } */
+/* a{
+  cursor: none !important;
+}
+button{
+  cursor: none !important;
+} */

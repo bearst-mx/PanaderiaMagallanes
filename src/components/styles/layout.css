@@ -169,6 +169,7 @@ a{
 }
 .dir{
     text-align: left;
+    font-family: 'Mont-SemiBold';
 }
 .dir a{
     background-color: white;
@@ -179,6 +180,7 @@ a{
     font-size: 30px;
     color: #444646;
     border-radius: 0.5rem;
+    font-family: 'Mont-Heavy';
 }
 .dir h2{
     font-size: 80px;
@@ -187,6 +189,7 @@ a{
 .dir h2 span{
     font-size: 30px;
     font-weight: normal;
+    font-family: 'Mont-ExtraLight';
 }
 
 @media (max-width:800px) {
@@ -222,7 +225,6 @@ a{
     }
     .dir h2 {
             font-size: 70px;
-            font-weight: bold;
     }
     .compassImg{
         display: none;

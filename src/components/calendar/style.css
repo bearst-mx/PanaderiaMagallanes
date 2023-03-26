@@ -1,0 +1,203 @@
+#header {
+  padding: 10px;
+  /* color: #d36c6c; */
+  font-size: 26px;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: space-between;
+}
+#monthDisplay{
+  display:flex;
+}
+#header button {
+  /* background-color:#92a1d1; */
+  border-radius: 0.5rem;
+  padding: 5px;
+  /* color: white; */
+  margin-left: 10px;
+  transition: 0.2s;
+  outline: none;
+}
+#header button:hover {
+  /* background-color: #778ac7; */
+}
+#container {
+  width: 100%;
+}
+#weekdays {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto;
+  color: #247BA0;
+}
+#weekdays div {
+  width: 100px;
+  padding: 10px;
+}
+#calendar {
+  width: 100%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto;
+  flex-wrap: wrap;
+}
+.day {
+  width: 100px;
+  padding: 10px;
+  height: 100px;
+  cursor: pointer;
+  box-sizing: border-box;
+  /* background-color: white; */
+  margin: 5px;
+  /* box-shadow: 0px 0px 3px #CBD4C2; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-weight: bold;
+  opacity: 60%;
+  transition: 0.2s;
+  background:transparent ;
+}
+.day:hover {
+  /* background-color: #f3fdff; */
+  /* transform: rotate(20deg); */
+  transform: scale(1.5);
+  
+  opacity: 100%;
+  /* transform: translate(10px); */
+}
+
+.day + .currentDay {
+  /* background-color:#e8f4fa; */
+  /* text-align: center; */
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  /* opacity: 0.2; */
+}
+.day+.currentDay p{
+  /* opacity: 80%; */
+  background-color: rgb(248, 210, 255);
+  border-radius: 0.5rem;
+  width: 40%;
+  height: 40%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  /* font-weight: bold; */
+
+}
+.event {
+  font-size: 10px;
+  padding: 3px;
+  /* background-color: #f0f0f0; */
+  /* color: white; */
+  border-radius: 5px;
+  max-height: 55px;
+  overflow: hidden;
+}
+.event svg{
+  color: red;
+  margin: auto;
+}
+.padding {
+  cursor: default !important;
+  /* background-color: #FFFCFF !important; */
+  box-shadow: none !important;
+}
+#newEventModal, #deleteEventModal {
+  z-index: 20;
+  padding: 25px;
+  background-color: #e8f4fa;
+  box-shadow: 0px 0px 3px black;
+  border-radius: 5px;
+  width: 350px;
+  top: 100px;
+  left: calc(50% - 175px);
+  position: absolute;
+  font-family: sans-serif;
+}
+#eventTitleInput {
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 25px;
+  border-radius: 3px;
+  outline: none;
+  border: none;
+  box-shadow: 0px 0px 3px gray;
+}
+#eventTitleInput.error {
+  border: 2px solid red;
+}
+#cancelButton, #deleteButton {
+  background-color: #d36c6c;
+  border-radius: 0.5rem;
+  padding: 5px;
+  color: white;
+  margin-left: 10px;
+  transition: 0.2s;
+  outline: none;
+}
+#saveButton, #closeButton {
+  background-color: #92a1d1;
+    background-color:#92a1d1;
+  border-radius: 0.5rem;
+  padding: 5px;
+  color: white;
+  margin-left: 10px;
+  transition: 0.2s;
+  outline: none;
+}
+#eventText {
+  font-size: 14px;
+}
+#modalBackDrop {
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: rgba(0,0,0,0.8);
+}
+.evDivLaunch {
+  cursor: pointer;
+  z-index: inherit;
+}
+.evDivLaunch:hover~.evDivCont{
+  /* background-color: blue; */
+  /* display: block; */
+  /* top: 200px; */
+  
+  height: 200px;
+}
+
+.evDivCont{
+  /* display: none; */
+  /* top: 120px; */
+  position: absolute;
+  background-color: rgba(225, 225, 225, 0.468);
+  width: 10%;
+  backdrop-filter: blur(1px);
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  z-index: 1;
+  height: 0px;
+  overflow-y: hidden;
+  transition: 0.5s;
+  
+}
+.evDivCont:hover {
+  /* display: block; */
+  height: 200px;
+  
+}
+.LiEvClients{
+  opacity: 50%;
+  transition: 0.2s;
+}
+.LiEvClients:hover{
+  opacity: 100%;
+  border-bottom-width: 5px !important;
+}

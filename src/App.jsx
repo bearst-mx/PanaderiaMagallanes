@@ -8,7 +8,8 @@ import{
   Panaderia,
   LogIn,
   Admin,
-  Worker
+  Worker,
+  Home2
 }from "./views"
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home2 />} />
       <Route path="/Panaderia" element={<Panaderia />} />
       <Route path="/LogIn" element={<LogIn />} />
       <Route path="/Admin" element={<Admin />} />

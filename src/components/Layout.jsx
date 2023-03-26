@@ -8,8 +8,8 @@ import {BiMoney} from "react-icons/bi"
 import {HiOutlineMenuAlt4 ,HiOutlineArrowNarrowRight} from "react-icons/hi"
 import {TbArrowNarrowUp} from "react-icons/tb"
 import {useState} from"react"
-import LogoImg from "../assets/img/logo/magallanesBlack.png"
-import LogoImgBlack from "../assets/img/logo/magallanesWhite.png"
+import LogoImg from "../assets/img/logo/magallanesWhite.png"
+import LogoImgBlack from "../assets/img/logo/magallanesBlack.png"
 import {IoCompass} from "react-icons/io5"
 import {Loader} from "../components"
 
@@ -30,10 +30,12 @@ function Layaout({ children }){
     if(open){
         document.querySelector(".menContainer").style.left="0";
         document.querySelector(".menContainer").style.backgroundColor="#BBCDE5"
+        document.querySelector(".createdBy").style.display="block"
     }else{
         setTimeout(() => {
             document.querySelector(".menContainer").style.left="91vw";
             document.querySelector(".menContainer").style.background="transparent"
+            document.querySelector(".createdBy").style.display="none"
         }, 100);
     }
 
@@ -101,11 +103,17 @@ function Layaout({ children }){
                                     }, 100);
                                 }}>Contacto</a></li>
                             </ul>
-                            <p style={{
-                                textAlign:"right",
-                                width:"92%",
-                                marginTop:"80px",
-                                fontWeight:"normal"
+                            <p className="createdBy" style={{
+                                // textAlign:"right",
+                                // width:"92%",
+                                // marginTop:"80px",
+                                // fontWeight:"normal",
+                                // bottom:"10px"
+                                position:"absolute",
+                                right:"80px",
+                                bottom:"20px",
+                                fontFamily:"Mont-ExtraLight"
+
                             }}>created by <a href="https://bearst.com.mx" target="_blank"><strong>bearst.com.mx</strong></a></p>
                 </div>
                 <div className="social" id="social">

@@ -35,6 +35,7 @@ body.active-modal {
     max-width: 600px;
     min-width: 300px;
     z-index: 100;
+    padding-bottom: 120px;
 }
 .modal-content h2{
     margin-top: 20px;
@@ -60,4 +61,25 @@ body.active-modal {
     margin: auto;
     border-radius: 0.5rem;
     outline: none;
+}
+.prodIdCont{
+    overflow-y: auto;
+    max-height: 200px;
+    padding: 10px;
+}
+.ModalCont::-webkit-scrollbar,.prodIdCont::-webkit-scrollbar{
+    background-color: black;
+    width: 5px;
+}
+.ModalCont::-webkit-scrollbar-thumb,.prodIdCont::-webkit-scrollbar-thumb{
+    background-color: #979797;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+.ModalCont{
+    /* background-color: rebeccapurple; */
+    overflow-y: auto;
+    max-height: 60vh;
+    padding: 10px;
+    /* padding-bottom: 50px; */
 }

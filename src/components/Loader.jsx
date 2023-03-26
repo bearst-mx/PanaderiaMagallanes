@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import LogoImg from "../assets/img/logo/magallanesBlack.png"
+import LogoImg from "../assets/img/logo/magallanesWhite.png"
 function Loader(){
 const [loading,setLoading]=useState(false);
 useEffect(()=>{

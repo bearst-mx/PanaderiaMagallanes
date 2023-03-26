@@ -23,9 +23,11 @@ body{
   }
   .sect{
     background-image: url('../../assets/img/pan3.jpg');
-    background-attachment: fixed;
-    background-position: center;
+    /* background-attachment: fixed; */
+    background-position: center top;
     background-repeat: no-repeat;
+    background-position-x: 50%;
+    background-position-y: 0%;
     background-size: cover;
     height: 100vh;
     width: 100vw;
@@ -33,22 +35,17 @@ body{
     color: white;
   }
   .sect1{
-    /* background-image: url('../../assets/img/pan2.jpg');
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover; */
     height: 100vh;
     width: 100vw;
     text-align: center;
     color: white;
-    display: flex;
-    justify-content: space-evenly;
+    /* display: flex; */
+    /* justify-content: space-evenly; */
     font-weight: normal;
   }
   .sect2{
     background-image: url('../../assets/img/PanaderiaMagallaesPan17.JPG');
-    background-attachment: fixed;
+    /* background-attachment: fixed; */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -63,7 +60,7 @@ body{
   }
   .sect3{
     background-image: url('../../assets/img/panadero.jpg');
-    background-attachment: fixed;
+    /* background-attachment: fixed; */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -74,26 +71,51 @@ body{
   }
   .downSvg{
     position: absolute;
-    bottom: 5vh;
+    bottom: 10vh;
     left: 5vw;
   }
   .sect3 h1 span{
     border-bottom: 2px solid white;
     font-weight: bold;
   }
+  .sect1,.sect2,.sect3{
+    padding-top: 40vh;
+  }
+  .sect1 h1,
+  .sect2 h1,
+  .sect3 h1 {
+    padding-left: 10vw;
+    font-size: 7vw;
+    width: 70vw;
+    text-align: left;
+    font-weight: bold;
+  }
   @media (max-width:800px) {
-    .sect1{
+    .sect1,.sect2,.sect3{
       display: block;
+      padding-top: 40vh;
     }
+    
     .InfoSect1{
       margin-top: 30px !important;
     }
       .sect1 h1,.sect2 h1,.sect3 h1{
-      width: 100vw !important;
+      /* width: 100vw !important; */
       /* text-align: center !important; */
-      margin-left: 0 !important;
-      font-size: 14vw !important;
-      padding-left: 10vw;
+      /* margin-left: 0 !important; */
+      /* font-size: 14vw !important; */
+      padding-left: 0vw;
+      font-size: 12vw;
+      width: 70vw;
+      text-align: left;
+      margin-left: 50px;
+      font-weight: bold;
+      /* fontSize: "8vw",
+          width:"80vw",
+          textAlign:"left",
+          marginLeft:"100px",
+          fontWeight:"bold" */
+    
     }
     .sect3 h1 span{
       font-size: 20vw;

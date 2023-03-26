@@ -3,7 +3,7 @@ import Layaout from "../components/Layout";
 import "../components/styles/panaderia.css"
 import Skeleton,{SkeletonTheme} from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
-import LogoImg from "../assets/img/logo/magallanesWhite.png"
+import LogoImg from "../assets/img/logo/magallanesBlack.png"
 import PanPrueba from "../assets/img/pan.jpg"
 import Masonry from 'react-masonry-css'
 import {storage,db} from "../firebase/firebaseConfig"

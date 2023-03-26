@@ -1,4 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Forum&display=swap');
+@font-face {
+  font-family: Mont-Heavy;
+  src: url('./assets/fonts/Mont-HeavyDEMO.otf');
+}
+
+@font-face {
+  font-family: Mont-SemiBold;
+  src: url('./assets/fonts/Mont-SemiBold.ttf');
+}
+
+@font-face {
+  font-family: Mont-ExtraLight;
+  src: url('./assets/fonts/Mont-ExtraLightDEMO.otf');
+}
+
+@font-face {
+  font-family: Forum;
+  src: url('./assets/fonts/Forum-Regular.ttf');
+}
+
 body {
   margin: 0;
   font-family: 'Forum', cursive;

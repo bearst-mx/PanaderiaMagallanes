@@ -26,16 +26,10 @@ function Home(){
             <div>
             <div >
             <section id="intro" className="h-screen flex items-center justify-center text-center sect" data-scroll-section>
-                     <div className="sect1" style={{
-                        paddingTop:"50vh"
-                    }}>
+                     <div className="sect1">
                         <h1
                         style={{
-                        fontSize:"8vw",
-                        width:"80vw",
-                        textAlign:"left",
-                        marginLeft:"100px",
-                        fontWeight:"bold"
+                        
                         }}
                         >Tradición que llega al corazón.
                         </h1>
@@ -52,14 +46,11 @@ function Home(){
                     <div className="font-extrabold" data-scroll data-scroll-sticky data-scroll-target="#about">
                         
                         <div className="sect2" style={{
-                            paddingTop:"50vh"
+                            
                         }}>
                             <h1
                             style={{
-                            fontSize:"8vw",
-                            width:"80vw",
-                            textAlign:"left",
-                            marginLeft:"100px",
+                            
                             }}
                             >Tradición familiar desde <span style={{
                                 borderBottom:"3px solid white"
@@ -83,14 +74,11 @@ function Home(){
                     <div className="text-5xl" data-scroll data-scroll-sticky data-scroll-target="#sect3">
                         
                         <div className="sect3" style={{
-                            paddingTop:"50vh"
+                            
                         }}>
                         <h1
                             style={{
-                            fontSize:"8vw",
-                            width:"80vw",
-                            textAlign:"left",
-                            marginLeft:"100px",
+                            
                             }}
                             >Conoce nuestra <span >historia.</span>
                             </h1>

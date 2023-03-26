@@ -1,15 +1,16 @@
 import React,{useState,useEffect} from "react";
-import {createUserWithEmailAndPassword,onAuthStateChanged,signOut,getIdToken,signInWithEmailAndPassword, getIdTokenResult,deleteUser } from "firebase/auth"
-import { Layout } from "../components";
+import {createUserWithEmailAndPassword,onAuthStateChanged,signOut,getIdToken,signInWithEmailAndPassword, getIdTokenResult,deleteUser, sendEmailVerification} from "firebase/auth"
+import { Layout} from "../components";
 import { Notifications, Modal} from "../components"
 import { auth,db,storage } from "../firebase/firebaseConfig";
-import { doc, collection, setDoc ,getDoc,getDocs,deleteDoc,onSnapshot,addDoc, updateDoc, increment,} from "firebase/firestore";
+import { doc, collection, setDoc ,getDoc,getDocs,deleteDoc,onSnapshot,addDoc, updateDoc, increment,query,orderBy } from "firebase/firestore";
 import { ref, uploadBytes,getDownloadURL} from "firebase/storage";
 import {updatePassword,updateProfile} from "firebase/auth"
-
+import { Calendar } from "../components/calendar/App";
 import {Loader,PasswordAndConfirmPasswordValidation,CompAlert} from "../components"
 import {SellersComp} from "../components";
-import { FaSignOutAlt,FaUserAlt,FaTicketAlt,FaSearch,} from "react-icons/fa"
+import { FaSignOutAlt,FaUserAlt,FaTicketAlt,FaSearch,FaMoneyBillAlt} from "react-icons/fa"
+import { RiFilePaper2Fill } from "react-icons/ri"
 import { IoIosSettings } from "react-icons/io"
 import { BsFillInboxesFill } from "react-icons/bs"
 import { GiSuitcase } from "react-icons/gi"
@@ -24,6 +25,7 @@ import Button from 'react-bootstrap/Button';
 // import Modal from "react-bootstrap/Modal"
 
 
+import { jsPDF } from "jspdf";
 
 
 import "../components/styles/login.css"
@@ -74,9 +76,11 @@ function LogIn(){
     const [RegSellProd,setRegSellProd]=useState('');
     const [RegSellBill,setRegSellBill]=useState('');
     const [RegSellComments,setRegSellComments]=useState('');
-    
+    const [TicketUrl,setTicketUrl]=useState('')
 
     const [Sales,setSales]=useState([]);
+    const [FilterSales,setFilterSales]=useState([]);
+
     const [AllUsers,setAllUsers]=useState([]);
     const [AllProd,setAllProd]=useState([])
     const [FilterUser,setFilterUser]=useState([]);
@@ -101,9 +105,32 @@ const handleSearchInputChange = (e) => {
         return user.name.match(e.target.value)
     })
     setFilterUser(filterUser);
-
 };
 
+const handleSearchInputSellsChange=(e)=>{
+    e.preventDefault();
+    console.log(e.target.value)
+    const FSales= Sales.filter((sale)=>{
+        return sale.date.toDate().toLocaleDateString('sp-MX',{weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}).match(e.target.value)
+    })
+    setFilterSales(FSales);
+}   
+
+
+const handleTicket=(prod,bill,comments)=>{
+// Landscape export, 2×4 inches
+const doc = new jsPDF({
+  orientation: "landscape",
+  unit: "in",
+  format: [3.15, 3.15]
+});
+// doc.text(prod, 1, 1);
+console.log("esto es lo que recibio el ticket: ",prod)
+doc.text(bill, 1, 2);
+doc.text(comments, 1, 3);
+// doc.save("tikcet.pdf");
+return doc
+}
 
 
 
@@ -280,52 +307,31 @@ const handleSearchInputChange = (e) => {
                     console.log("Las ordenes son estas: ",Orders);
 
                 }
-                
-                
             }
         
             const getSales= async()=>{
                 setSales([]);
                 const docRef = doc(db, `incomes/week`);
+                // const docSnap = await getDoc(query(docRef, orderBy('timestamp')));
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                 // SetCurrentUserRole((docSnap.data().role).toLowerCase());
                     console.log("los sales son: ",docSnap.data().sells)
                     // setSales(docSnap.data().sells)
-                    Object.keys(docSnap.data().sells).forEach((key) =>{
-                        console.log(key); // 👉️ name, country
-                        console.log(docSnap.data().sells[key]); // 👉️ James, Chile
+                    if(docSnap.data().sells){
+                        Object.keys(docSnap.data().sells).forEach((key) =>{
+                        console.log(key);
+                        console.log(docSnap.data().sells[key]);
+                        console.log(docSnap.data().sells[key].date);
+                        console.log(((docSnap.data().sells[key].date).toDate()));
+                        
                         setSales(current => [...current, docSnap.data().sells[key]]);
                     })
                     console.log(Sales)
-                    // console.log("Las sells son: ",newData);
-                    // docSnap.data().sells.keys(obj).forEach((el)=>{
-                    //     console.log(el)
-                    // })
-                    
-
+                    }
                 } else {
                 console.log("No such document!");
                 }
-                // await getDocs(collection(db,"incomes/week")).then((el)=>{
-                //     const newData = el.docs
-                //         .map((doc) => ({...doc.data(), id:doc.id }));
-                //     // setSales(newData);                
-                //     console.log("Las sells son: ",Sales, newData);
-                // })
-
-                // await getDocs(collection(db, "sales"))
-                // .then((querySnapshot)=>{               
-                //     const newData = querySnapshot.docs
-                //         .map((doc) => ({...doc.data(), id:doc.id }));
-                //     setSales(newData);                
-                //     console.log("Los valores obtenidos son: ",Sales, newData);
-                // })
-                // await getDocs(collection(db, "incomes/week/")).then((el)=>{
-                //     console.log("los valores del income son:",el.docs)
-                // }).catch(err=>{
-                //     console.log(err.message)
-                // })
 
             }
             const getAllUsers= async()=>{
@@ -341,10 +347,15 @@ const handleSearchInputChange = (e) => {
                 await getDocs(collection(db, "products")).then((snapshot)=>{
                     const newData = snapshot.docs
                         .map((doc) => ({...doc.data(), id:doc.id }));
-                        setAllProd(newData);
-                    // setAllUsers(newData);                
+                        // setAllProd(newData);
+                    // setAllUsers(newData);
+                    // newData.sort();
+                    newData.sort((a, b) => a.id.localeCompare(b.id))
+                    setAllProd(newData);
+                    // setAllUsers(newData);
                     console.log("Los valores obtenidos de los products son: ",AllProd ,newData);
                 })
+                // AllProd.sort();
             }
             
       useEffect(() => {
@@ -363,7 +374,7 @@ const handleSearchInputChange = (e) => {
             SetUser(currentUser);
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/firebase.User
-            const uid = currentUser.uid;
+            const uid = currentUser.email;
             console.log(uid)
             console.log(currentUser)
             
@@ -420,24 +431,32 @@ const handleSearchInputChange = (e) => {
     const register= async(userName,usType,email,tel,pass)=>{
         // e.preventDefault();
         console.log(email, pass, usType);
-
+        
         try{
-            const userCredential= await createUserWithEmailAndPassword(auth,email,pass);
-            const user = userCredential.user;
-            const docuRef = doc(db, `usuarios/${user.uid}`);
+            // const userCredential= await createUserWithEmailAndPassword(auth,email,pass);
+            // const user = userCredential.user;
+            const docuRef = doc(db, `usuarios/${email.toLowerCase()}`);
             setDoc(docuRef, { 
                 name: userName,
                 role: usType,
                 email: email, 
                 tel: tel,
                 pass: pass
-            }).then(()=>{
+            }).then(async()=>{
+                await createUserWithEmailAndPassword(auth,email,pass);
                 updateProfile(auth.currentUser,{
                     displayName:userName,
                     // phoneNumber:tel
-                }).then(() => {
+                }).then(async() => {
                     console.log("Profile updated")
-                    location.reload();
+                        await sendEmailVerification(auth.currentUser).then(el=>{
+                            console.log("correo de verificación enviado")
+                            setInterval(() => {
+                                location.reload();
+                            }, 1000);
+                        }).catch(err=>{
+                            console.log(err.message)
+                        })
                 }).catch((error) => {
                     console.log(error.message)
                 });
@@ -470,104 +489,180 @@ const handleSearchInputChange = (e) => {
     await signOut(auth);
     }
 
-    const RegPed=async(el)=>{
+
+    const ModRegPedModalCallback= async(el,SelectProdItems,TotalBill,ProdReceivedValue)=>{
+        console.log(el.target)
+        const name=el.target.NameClient.value;
+        const prod=el.target.selectProd.value;
+        const payType=el.target.payType.value;
+        const prodDate=el.target.prodDate.value;
+        const tel=el.target.telClient.value;
+        const comments=el.target.comments.value;
+        const Total=TotalBill;
+        const Received=ProdReceivedValue;
+        console.log("El name del cliente es:",name)
+        console.log("El prod del cliente es:",prod)
+        console.log("El pay del cliente es:",payType)
+        console.log("El date del cliente es:",prodDate)
+        console.log("El tel del cliente es:",tel)
+        console.log("El comments del cliente es:",comments)
+
+        // console.log(SelectProdItems)
+        // console.log(TotalBill)
+        // console.log(ProdReceivedValue)
         var Dt=new Date();
         var fecha = Dt.getDate() + '-' + ( Dt.getMonth() + 1 ) + '-' + Dt.getFullYear()+'('+Dt.getHours() +':'+ Dt.getMinutes() + ':' + Dt.getSeconds()+')';
-        el.preventDefault();
+        // el.preventDefault();
         try{
             const docuRef = doc(db, `orders/${fecha}`);
             setDoc(docuRef, { 
-                client: SellClName, 
-                prod:SellProd,
-                deliver:SellEnDate,
-                contact:SellContNumber,
-                comments:SellComments,
+                client: name, 
+                prod:prod,
+                deliver:prodDate,
+                contact:tel,
+                comments:comments,
                 status:"por hacer",
-                SubDate:fecha
+                SubDate:fecha,
+                payType:payType,
+                total:Total,
+                received:Received
             });
             alert("pedido generado");
         }
         catch(error){
             console.log(error.message)
         }
-    }
-    const HandleSellSub=async(el)=>{
-         el.preventDefault();
-        //  console.log(user.email);
-         var Dt=new Date();
-         var fecha = Dt.getDate() + '-' + ( Dt.getMonth() + 1 ) + '-' + Dt.getFullYear()+'('+Dt.getHours() +':'+ Dt.getMinutes() + ':' + Dt.getSeconds()+')';
-        try{
-            const docuRef = doc(db, `sales/${fecha}`);
-            const incomeRef = doc(db, `incomes/week`);
-            // const docuRef3= collection("incomes",doc("week"))
-            // const generalRef = collection(db,`incomes/week/`);
-            const incomeRefProd = doc(db, `incomes/week/${fecha}/${RegSellBill}`);
-            setDoc(docuRef, { 
-            prod: RegSellProd, 
-            bill: RegSellBill,
-            comments: RegSellComments,
-            user: user.email,
-            date: fecha,
-            payMethod:"efectivo"
-            });
 
-            const docSnap = await getDoc(incomeRef);
-            if (docSnap.exists()) {
+    }
+    // const RegPed=async(el)=>{
+    //     var Dt=new Date();
+    //     var fecha = Dt.getDate() + '-' + ( Dt.getMonth() + 1 ) + '-' + Dt.getFullYear()+'('+Dt.getHours() +':'+ Dt.getMinutes() + ':' + Dt.getSeconds()+')';
+    //     el.preventDefault();
+    //     try{
+    //         const docuRef = doc(db, `orders/${fecha}`);
+    //         setDoc(docuRef, { 
+    //             client: SellClName, 
+    //             prod:SellProd,
+    //             deliver:SellEnDate,
+    //             contact:SellContNumber,
+    //             comments:SellComments,
+    //             status:"por hacer",
+    //             SubDate:fecha
+    //         });
+    //         alert("pedido generado");
+    //     }
+    //     catch(error){
+    //         console.log(error.message)
+    //     }
+    // }
+
+
+    // const ModSellSubModalCallback=(el,items)=>{
+    //     var payType=el.target.payType.value
+    //     var bill=el.target.bill.value
+    //     var comments=el.target.comments.value
+    //     console.log(payType,bill,comments,items)
+    // }
+
+    const ModSellSubModalCallback=async(el,items,TotalBill,ProdReceivedValue)=>{
+        //  el.preventDefault();
+         let received=ProdReceivedValue;
+         let prod=items;
+         let bill=TotalBill;
+         let comments=el.target.comments.value;
+         let payType=el.target.payType.value;
+
+        if(bill>received){
+            alert("debes recibir el total de la cuenta");
+        }
+        else{
+            
+         console.log(prod,bill,comments)
+         console.log(handleTicket(prod,bill,comments).output('blob'))
+         let blobTicket=handleTicket(prod,bill,comments).output('blob')
+        var Dt=new Date();
+        var fecha = Dt.getDate() + '-' + ( Dt.getMonth() + 1 ) + '-' + Dt.getFullYear()+'('+Dt.getHours() +':'+ Dt.getMinutes() + ':' + Dt.getSeconds()+')';
+        const storageRef = ref(storage, `sells/${fecha}`);
+        // const docuRef = doc(db, `tikcets/${fecha}`);
+        const docuRef = doc(db, `sales/${fecha}`);
+        const incomeRef = doc(db, `incomes/week`);
+        const incomeRefProd = doc(db, `incomes/week/${fecha}/${bill}`);
+        const docSnap = await getDoc(incomeRef);
+        if (docSnap.exists()) {
             console.log("Document data:", docSnap.data().income);
             setDoc(incomeRef,{
-                income:parseInt(docSnap.data().income)+parseInt(RegSellBill)
-            },
+                income:parseFloat(docSnap.data().income)+parseFloat(bill)
+            }
+            ,
             {merge:true}
             )
-            } else {
+            uploadBytes(storageRef, blobTicket).then((snapshot) => {
+                console.log('Uploaded a blob or file!');
+                // var ticketUrl;
+                getDownloadURL(snapshot.ref).then(function(downloadURL) {
+                    console.log("File available at", downloadURL);
+                    // setTicketUrl(downloadURL);
+                    // ticketUrl=downloadURL;
+                    // setDoc(docRef)
+                        // setDoc(docuRef, { 
+                        //     url:downloadURL,
+                        //     name:proName,
+                        //     price:proPrice,
+                        //     desc:prodDesc
+                        // }).then(()=>{
+                        //     alert("produdcto agregado correctamente");
+                        // }).catch(err=>{
+                        //     console.log(err)
+                        // })
+ 
+                        try{
+                            setDoc(docuRef, { 
+                                prod: prod, 
+                                bill: bill,
+                                comments: comments,
+                                user: user.email,
+                                date: Dt,
+                                payMethod:payType,
+                                ticket:downloadURL,
+                                received:received
+                            });
+                            let dir=`incomes/week/12`
+                            const dbRef = doc(db,"incomes/week");
+                            const sells={}
+                            sells[Dt]={
+                                prod: prod, 
+                                bill: bill,
+                                comments: comments,
+                                user: user.email,
+                                ticket:downloadURL,
+                                date: Dt,
+                                payMethod:payType,
+                                received:received
+                            }
+                            setDoc(dbRef,{
+                                sells
+                            },
+                            {merge:true}
+                            )
+                            alert("venta generada");
+                        }
+                        catch(error){
+                            console.log(error.message)
+                        }
+                });
+                console.log("File available at this:", TicketUrl);
+        });
+        } else{
             console.log("No such document!");
             }
-            let dir=`incomes/week/12`
-            const dbRef = doc(db,"incomes/week");
-            // setDoc(dbRef,{
-            //     prod: RegSellProd, 
-            //     bill: RegSellBill,
-            //     comments: RegSellComments,
-            //     user: user.email
-            // },
-            // {merge:true}
-            // )
-
-
-
-            const sells={}
-            sells[fecha]={
-                prod: RegSellProd, 
-                bill: RegSellBill,
-                comments: RegSellComments,
-                user: user.email
-            }
-            setDoc(dbRef,{
-                sells
-            },
-            {merge:true}
-            )
-
-
-
-
-            // setDoc(incomeRefProd,{
-            //     prod: RegSellProd, 
-            //     bill: RegSellBill,
-            //     comments: RegSellComments,
-            //     user: user.email
-            // },
-            // {merge:true}
-            // )
-
-
-            alert("venta generada");
-        }
-        catch(error){
-            console.log(error.message)
         }
     }
+
+
+
+    
     if(user){
+        if(user.emailVerified){
         if(CurrentUserRole=="admin"){
             return(
         <Layout>
@@ -697,6 +792,7 @@ const handleSearchInputChange = (e) => {
                                 <button className="IngDash" onClick={()=>{
                                     // alert("diste click");
                                     setDashboardPage("Incomes")
+                                    getAllProd();
                                     getSales();
                                 }}>
                                     <strong style={{
@@ -710,7 +806,7 @@ const handleSearchInputChange = (e) => {
                                     <p style={{
                                         opacity:"50%",
                                         fontSize:"1.5vw",
-                                    }}><span>{resetTimestamp.getDate()} - {(resetTimestamp.getDate())+6}</span> de <span>{Intl.DateTimeFormat('sp', { month: 'long' }).format(new Date(resetTimestamp))}</span></p>
+                                    }}><span>{resetTimestamp.getDate()} - {(resetTimestamp.getDate())+7}</span> de <span>{Intl.DateTimeFormat('sp', { month: 'long' }).format(new Date(resetTimestamp))}</span></p>
                                 </button>
                             </div>
 
@@ -734,8 +830,9 @@ const handleSearchInputChange = (e) => {
                                     textAlign:"center",
                                     margin:"auto",
                                 }}>
+                                    <tbody>
                                     <tr>
-                                            <th>ID</th>
+                                            {/* <th>ID</th> */}
                                             <th>Fecha</th>
                                             <th>Ingreso</th>
                                             <th>Vendedor</th>
@@ -743,21 +840,28 @@ const handleSearchInputChange = (e) => {
                                             <th>Recibo</th>
                                     </tr>
                                         {
-                                             Sales?.map((el)=>(
-                                                <tr key={el.id}>
-                                                    <td>{el.key}</td>
-                                                    <td>{el.prod}</td>
+                                             Sales.sort((a, b) => a.date < b.date ? 1:-1)?.map((el)=>(
+                                                <tr key={el.key}>
+                                                    {/* <td>{el.prod}</td> */}
+                                                    {/* <td>{el.date}</td> */}
+                                                    <td>
+                                                    {el.date.toDate().toLocaleTimeString('sp-MX',{hour12: false})} - {el.date.toDate().toLocaleDateString('sp-MX',{weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
+                                                    </td>
                                                     <td>{el.bill}</td>
                                                     <td>{el.user}</td>
                                                     <td>{el.payMethod}</td>
-                                                    <td><button>ver</button></td>
+                                                    <td><button onClick={()=>{
+                                                        if(el.ticket){
+                                                            window.open(el.ticket)
+                                                        }else{
+                                                            alert("Ticket no disponible")
+                                                        }
+                                                        
+                                                    }}>ver</button></td>
                                                 </tr>
                                             )) 
                                         }
-
-                                        
-
-
+                                        </tbody>
                                 </table>
                             </div>
                         }
@@ -804,6 +908,7 @@ const handleSearchInputChange = (e) => {
                                 textAlign:"center",
                                 margin:"auto",
                             }}>
+                            <tbody>
                                 <tr style={{
                                     borderBottom:"2px solid black"
                                 }}>
@@ -840,6 +945,7 @@ const handleSearchInputChange = (e) => {
                                             </tr>
                                         ))
                                     }
+                                </tbody>
                             </table>
                             </div>
                         </div>
@@ -939,7 +1045,7 @@ const handleSearchInputChange = (e) => {
             <section
             style={{
                 width:"99.3vw",
-                background:"rgba(0,0,0,0.5)",
+                // background:"rgba(0,0,0,0.5)",
             }}
             className="h-screen flex items-center justify-center text-center " data-scroll-section
             >
@@ -961,10 +1067,6 @@ const handleSearchInputChange = (e) => {
                         textAlign:"center"
                         
                     }}>
-                    <p style={{
-                        overflow:"hidden",
-                    }}>{user.email}</p>
-                    <hr />
                     <br />
                     <br />
                     <ul style={{
@@ -978,26 +1080,65 @@ const handleSearchInputChange = (e) => {
                         // textAlign:"left"
                     }}>
                         <li className="MenEl"><button onClick={()=>{
-                            setDashboardPage("RegSell")
-                        }}>Registrar Venta</button></li>
+                            setDashboardPage("RegSell");
+                            getSales();
+                            getAllProd();
+                        }}><FaMoneyBillAlt/>Ventas</button></li>
                         <li className="MenEl"><button onClick={()=>{
+                            
                             setDashboardPage("RegOrder")
-                        }}>Registrar Pedido</button></li>
-                        <li className="MenEl"><button onClick={()=>{
+                            getOrders();
+                            
+                        }}><RiFilePaper2Fill/>Pedidos</button></li>
+                        {/* <li className="MenEl"><button onClick={()=>{
                             setDashboardPage("StatOrder")
                             getOrders();
-                        }}>Status Pedido</button></li>
+                        }}>Status Pedido</button></li> */}
                         <li>
-                            <button 
-                            onClick={logout} style={{
-                            background:"rgb(191, 30, 30)",
-                            fontSize:"80%",
-                            padding:"5px",
-                            borderRadius:"0.3rem",
-                            outline:"none",
-                            color:"white",
-                            textAlign:"center !important"
-                            }}>LogOut</button>
+                        <div>
+                                <FaUserAlt style={{
+                                        background:"black",
+                                        color:"white",
+                                        width:"50px",
+                                        height:"50px",
+                                        padding:"10px",
+                                        borderRadius:"10rem",
+                                        margin:"auto"
+                                        // position:"absolute"
+                                }}/>
+                                
+                                {user.displayName?<strong>{user.displayName}</strong>:<strong>username</strong>}
+                                <p>{user.email}</p>
+                                <div style={{
+                                    display:"flex",
+                                    justifyContent:"space-around",
+
+                                }}>
+                                    <button 
+                                    style={{
+                                    // background:"rgb(191, 30, 30)",
+                                    fontSize:"80%",
+                                    padding:"5px",
+                                    borderRadius:"0.3rem",
+                                    outline:"none",
+                                    color:"black",
+                                    textAlign:"center !important",
+                                    border:"1px solid black"
+                                    }}> <IoIosSettings size={20}/> </button>
+                                    <button 
+                                    onClick={logout} style={{
+                                    // background:"rgb(191, 30, 30)",
+                                    fontSize:"80%",
+                                    padding:"5px",
+                                    borderRadius:"0.3rem",
+                                    outline:"none",
+                                    color:"black",
+                                    textAlign:"center !important",
+                                    border:"1px solid black"
+                                    }}> <FaSignOutAlt size={20}/> </button>
+                                </div>
+
+                            </div>
                         </li>
                     </ul>
                     
@@ -1007,40 +1148,145 @@ const handleSearchInputChange = (e) => {
                         width:"78vw",
                         color:"black"
                     }}>
-                        <h1 style={{
-                            fontSize:"30px",
-                            fontWeight:"bold",
-                            textAlign:"left",
-                            padding:"2vw",
-                            borderBottom:"solid 2px black"
-                        }}>Sellers Dashboard</h1>
                         {/* AQUI SE PONDRA DEPENDIENDO DEL BOTON CLICADO*/}
                         {DashboardPage=="RegSell"&&
                         <div>
-                            <h1 className="TitleClickDash">Registrar Venta</h1>
-                            <form onSubmit={HandleSellSub}>
-                                <input type="text" placeholder="Producto"  required onChange={(e)=>{
+                            {/* <h1 className="TitleClickDash">Registrar Venta</h1> */}
+                            <Modal
+                                title="Vender"
+                                type="RegSell"
+                                element={AllProd}
+                                ModSellSubModalCallback={ModSellSubModalCallback}
+                                BgColorBtn="#D0C4F0"
+                            />
+                            <p style={{
+                                marginTop:"30px",
+                                textAlign:"left",
+                                width:"80%",
+                                margin:"auto"
+                            }}>Últimas ventas</p>
+
+                            <label htmlFor="searchUser" style={{
+                                display:"flex",
+                                alignContent:"center",
+                                width:"80%",
+                                // cursor:"pointer",
+                                margin:"auto",
+                                alignItems:"center",
+                                border:"2px solid black",
+                                padding:"10px",
+                                borderRadius:"0.5rem",
+                                // marginTop:"30px",
+                                marginBottom:"30px"
+                            }}>
+                                <FaSearch/>
+                                <input type="text" id="searchUser" placeholder="Buscar venta"
+                                onChange={handleSearchInputSellsChange}
+                                // value={searchInput} 
+                                 style={{
+                                    outline:"none",
+                                    paddingLeft:"10px",
+                                    width:"100%"
+                                }}/>
+                            </label>
+
+
+                            <table style={{
+                                    width:"80%",
+                                    border:"2px solid black",
+                                    textAlign:"center",
+                                    margin:"auto",
+                                }}>
+                                <tbody>
+                                    <tr>
+                                            {/* <th>ID</th> */}
+                                            <th>Fecha</th>
+                                            <th>Ingreso</th>
+                                            <th>Vendedor</th>
+                                            <th>Método de pago</th>
+                                            <th>Recibo</th>
+                                    </tr>
+
+                                        
+
+                                        {
+                                             FilterSales.sort((a, b) => a.date < b.date ? 1:-1)?.map((el)=>(
+                                                <tr key={el.key}>
+                                                    {/* <td>{el.prod}</td> */}
+                                                    {/* <td>{(el.date).toString()}</td> */}
+                                                    {/* <td>{(el.date).toDate().toString()}</td> */}
+                                                    <td>
+                                                    {el.date.toDate().toLocaleTimeString('sp-MX',{hour12: false})} - {el.date.toDate().toLocaleDateString('sp-MX',{weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
+                                                    </td>
+                                                    <td>{el.bill}</td>
+                                                    <td>{el.user}</td>
+                                                    <td>{el.payMethod}</td>
+                                                    <td><button onClick={()=>{
+                                                        if(el.ticket){
+                                                            window.open(el.ticket)
+                                                        }else{
+                                                            alert("Ticket no disponible")
+                                                        }
+                                                        
+                                                    }}>ver</button></td>
+                                                </tr>
+                                            )) 
+                                        }
+                                    </tbody>
+                                </table>
+                            
+
+
+
+
+
+
+
+
+
+
+                            {/* <form onSubmit={HandleSellSub}>
+                                <input type="text" placeholder="Producto" name="prod" required onChange={(e)=>{
                                     // console.log(e.target.value);
                                     setRegSellProd(e.target.value);
                                 }}/>
                                 <br />
-                                <input type="number" placeholder="Cuenta"  required onChange={(e)=>{
+                                <input type="number" placeholder="Cuenta"  name="bill" required onChange={(e)=>{
                                     setRegSellBill(e.target.value);
                                     }}/>
                                 <br />
-                                <textarea name="" id="" cols="30" rows="10" placeholder="Comentarios" required onChange={(e)=>{ 
+                                <textarea name="comments" id="" cols="30" rows="10" placeholder="Comentarios" required onChange={(e)=>{ 
                                     setRegSellComments(e.target.value);
                                                                     
                                 }}></textarea>
                                 <br />
                                 <input type="submit" value="Enviar" />
-                            </form>
+                                <button type="button" onClick={handleTicket}>recibo</button>
+                            </form> */}
                         </div>
                         }
                         {DashboardPage=="RegOrder"&&
                         <div>
-                            <h1>Registrar Orden</h1>
-                            <br />
+                            <Modal
+                                title="Realizar nuevo pedido"
+                                type="RegOrder"
+                                element={AllProd}
+                                ModRegPedModalCallback={ModRegPedModalCallback}
+                                BgColorBtn="#F0C4E4"
+                            />
+                            
+                         <div>
+                            <Calendar
+                                EventOrders={Orders}
+                            />
+                         </div>
+
+
+
+
+{/* 
+
+
                             <form action="" onSubmit={RegPed}>
                                 <input type="text" name="NameClient" id="" placeholder="Nombre del Cliente"  required onChange={(el)=>{
                                     console.log(el.target.value)
@@ -1076,45 +1322,17 @@ const handleSearchInputChange = (e) => {
                                 }}></textarea>
                                 <br />
                                 <input type="submit" value="Registrar" />
-                            </form>
+                            </form> */}
                         </div>}
-                        {DashboardPage=="StatOrder"&&
+                        {/* {DashboardPage=="StatOrder"&&
                         <div>
-                         <div style={{
-                            overflowY:"scroll",
-                            height:"50vh"
-                         }}>
-                         <h1>Aqui va a estar la orden</h1>
-                            <FullCalendar
-                            plugins={[ dayGridPlugin ]}
-                            initialView="dayGridMonth"
-                            events={[
-                                { title: 'event 11', date: '2022-12-30' },
-                                { title: 'event 2', date: '2022-12-31' }
-                            ]}
-                            height={420}
+                         <div>
+                            <Calendar
+                                EventOrders={Orders}
                             />
-                                {Orders.map((el)=>{
-                                    return(
-                                        <div key={el.deliver} style={{
-                                            background:"white",
-                                            marginTop:"10px",
-                                        }}> 
-                                            <p>Fecha de entrega: {el.deliver}</p>
-                                            <br />
-                                            <p>Cliente: {el.client}</p>
-                                            <br />
-                                            <p>Número de cotácto: {el.contact}</p>
-                                            <br />
-                                            <p>Producto: {el.prod}</p>
-                                            <br />
-                                            <p>Status del pedido: <button onClick={()=>HandleChangeStatus(el)}>{el.status}</button>  </p>
-                                        </div>
-                                    )
-                                })}
                          </div>
 
-                        </div>}
+                        </div>} */}
                         {/* AQUI SE PONDRA DEPENDIENDO DEL BOTON CLICADO*/}
                         <br/>
                     </div>
@@ -1175,6 +1393,7 @@ const handleSearchInputChange = (e) => {
                         }}>Revisar Ventas</button></li>
                         <li className="MenEl"><button onClick={()=>{
                             setDashboardPage("CRUDStore")
+                            
                         }}>CRUD Almacén</button></li>
                         <li className="MenEl"><button onClick={()=>{
                             setDashboardPage("RegDev")
@@ -1222,6 +1441,42 @@ const handleSearchInputChange = (e) => {
         </Layout>
         )
         }
+    }else{
+        return(
+            <Layout>
+            <section
+            style={{
+                width:"99.3vw",
+            }}
+            className="h-screen flex items-center justify-center text-center " data-scroll-section
+            >
+                <div>
+                    <h2 style={{
+                        color:"black",
+                        fontWeight:"bold",
+                        fontSize:"5vh"
+                    }}>Verifica tu correo para continuar</h2>
+                    <button onClick={async function(){
+                        await sendEmailVerification(auth.currentUser).then(el=>{
+                            console.log("correo de verificación enviado")
+                            alert("correo enviado");
+                        }).catch(err=>{
+                            console.log(err.message)
+                            alert(err.message)
+                        })
+                    }} style={{
+                        color:"black",
+                        background:"yellow",
+                        padding:"10px",
+                        borderRadius:"0.3rem",
+                        fontWeight:"bold",
+                        outline:"none"
+                    }}>Enviar correo</button>
+                </div>
+            </section>
+        </Layout>
+        )
+    }
     
     }
     else{
